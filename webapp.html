@@ -431,6 +431,31 @@
             // Keep player in bounds
             player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
 
+                    // Platform collision detection
+        player.onGround = false;
+        platforms.forEach(plat => {
+            // Check if player is above platform and falling down
+            if (player.y + player.height >= plat.y &&
+                player.y + player.height <= plat.y + plat.height &&
+                player.x + player.width > plat.x - scrollSpeed &&
+                player.x < plat.x - scrollSpeed + plat.width &&
+                player.velocityY >= 0) {
+                
+                player.y = plat.y - player.height;
+                player.velocityY = 0;
+                player.onGround = true;
+                player.jumping = false;
+            }
+        });
+        
+        // Ensure player stays on ground level minimum
+        if (player.y + player.height > GROUND_Y) {
+            player.y = GROUND_Y - player.height;
+            player.velocityY = 0;
+            player.onGround = true;
+            player.jumping = false;
+        }
+
             // Reset
                     if (player.y > canvas.height) {
             gameOver();
