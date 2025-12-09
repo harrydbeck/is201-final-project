@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marketing ROI Calculator - Interactive Web App</title>
+    <title>BYU Cougar Collector - Playable Game</title>
     <style>
         * {
             margin: 0;
@@ -13,294 +13,410 @@
         
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #002E5D 0%, #0062B8 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            overflow: hidden;
         }
         
-        .container {
+        .game-container {
+            text-align: center;
             background: white;
             border-radius: 20px;
+            padding: 30px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 40px;
-            max-width: 600px;
-            width: 100%;
+            max-width: 800px;
         }
         
         h1 {
-            color: #667eea;
-            text-align: center;
+            color: #002E5D;
             margin-bottom: 10px;
-            font-size: 2em;
+            font-size: 2.5em;
         }
         
         .subtitle {
-            text-align: center;
             color: #666;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+        }
+        
+        #gameCanvas {
+            border: 4px solid #002E5D;
+            border-radius: 10px;
+            background: #f0f4f8;
+            cursor: pointer;
+            max-width: 100%;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            gap: 20px;
+        }
+        
+        .stat-box {
+            background: linear-gradient(135deg, #002E5D 0%, #0062B8 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            flex: 1;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .controls {
+            margin-top: 20px;
+            color: #666;
             font-size: 0.95em;
         }
         
-        .input-group {
-            margin-bottom: 25px;
-        }
-        
-        label {
-            display: block;
-            color: #333;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 1em;
-        }
-        
-        input[type="number"] {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-        
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 30px;
-        }
-        
-        button {
-            flex: 1;
-            padding: 15px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .calculate-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .calculate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        
-        .reset-btn {
-            background: #f0f0f0;
-            color: #666;
-        }
-        
-        .reset-btn:hover {
-            background: #e0e0e0;
-        }
-        
-        .results {
-            margin-top: 30px;
-            padding: 25px;
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            border-radius: 12px;
-            display: none;
-        }
-        
-        .results.show {
-            display: block;
-            animation: slideIn 0.5s ease;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
-        }
-        
-        .result-item:last-child {
-            border-bottom: none;
-        }
-        
-        .result-label {
-            color: #555;
-            font-weight: 600;
-        }
-        
-        .result-value {
-            color: #667eea;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-        
-        .result-value.positive {
-            color: #2ecc71;
-        }
-        
-        .result-value.negative {
-            color: #e74c3c;
-        }
-        
-        .interpretation {
-            margin-top: 20px;
-            padding: 15px;
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background: white;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 10;
         }
         
-        .interpretation h3 {
-            color: #667eea;
-            margin-bottom: 8px;
+        .game-over.show {
+            display: block;
+        }
+        
+        .game-over h2 {
+            color: #002E5D;
+            margin-bottom: 20px;
+        }
+        
+        .restart-btn {
+            background: linear-gradient(135deg, #002E5D 0%, #0062B8 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
             font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
         
-        .interpretation p {
-            color: #666;
-            line-height: 1.6;
+        .restart-btn:hover {
+            transform: translateY(-2px);
         }
         
-        .back-link {
-            text-align: center;
-            margin-top: 30px;
+        .back-links {
+            margin-top: 20px;
         }
         
-        .back-link a {
-            color: #667eea;
+        .back-links a {
+            color: #002E5D;
             text-decoration: none;
+            margin: 0 15px;
             font-weight: 600;
-            transition: color 0.3s ease;
         }
         
-        .back-link a:hover {
-            color: #764ba2;
+        .back-links a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📊 Marketing ROI Calculator</h1>
-        <p class="subtitle">Calculate the return on investment for your marketing campaigns</p>
+    <div class="game-container">
+        <h1>🐾 BYU Cougar Collector</h1>
+        <p class="subtitle">Collect the Y's and avoid obstacles!</p>
         
-        <form id="roiForm">
-            <div class="input-group">
-                <label for="investment">Total Marketing Investment ($)</label>
-                <input type="number" id="investment" placeholder="Enter total spend" required min="0" step="0.01">
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-label">SCORE</div>
+                <div class="stat-value" id="scoreDisplay">0</div>
             </div>
-            
-            <div class="input-group">
-                <label for="revenue">Revenue Generated ($)</label>
-                <input type="number" id="revenue" placeholder="Enter revenue generated" required min="0" step="0.01">
-            </div>
-            
-            <div class="input-group">
-                <label for="costs">Additional Costs ($)</label>
-                <input type="number" id="costs" placeholder="Enter additional costs" value="0" min="0" step="0.01">
-            </div>
-            
-            <div class="button-group">
-                <button type="submit" class="calculate-btn">Calculate ROI</button>
-                <button type="button" class="reset-btn" onclick="resetForm()">Reset</button>
-            </div>
-        </form>
-        
-        <div id="results" class="results">
-            <div class="result-item">
-                <span class="result-label">Net Profit:</span>
-                <span class="result-value" id="netProfit">$0.00</span>
-            </div>
-            <div class="result-item">
-                <span class="result-label">ROI Percentage:</span>
-                <span class="result-value" id="roiPercent">0%</span>
-            </div>
-            <div class="result-item">
-                <span class="result-label">Return per Dollar:</span>
-                <span class="result-value" id="returnPerDollar">$0.00</span>
-            </div>
-            
-            <div class="interpretation" id="interpretation">
-                <h3>Interpretation</h3>
-                <p id="interpretationText"></p>
+            <div class="stat-box">
+                <div class="stat-label">HIGH SCORE</div>
+                <div class="stat-value" id="highScoreDisplay">0</div>
             </div>
         </div>
         
-        <div class="back-link">
-            <a href="scratch.html">← Back to Projects</a> | 
+        <canvas id="gameCanvas" width="700" height="400"></canvas>
+        
+        <div class="controls">
+            👆 Click or press SPACE to jump | Collect Y logos | Avoid obstacles!
+        </div>
+        
+        <div class="back-links">
+            <a href="scratch.html">← Back to Projects</a>
             <a href="index.html">Home</a>
         </div>
     </div>
     
+    <div class="game-over" id="gameOver">
+        <h2>Game Over!</h2>
+        <p style="font-size: 1.2em; margin: 20px 0;">Final Score: <strong id="finalScore">0</strong></p>
+        <button class="restart-btn" onclick="restartGame()">Play Again</button>
+    </div>
+    
     <script>
-        document.getElementById('roiForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            calculateROI();
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Game variables
+        let score = 0;
+        let highScore = localStorage.getItem('byuCougarHighScore') || 0;
+        let gameRunning = true;
+        let gameSpeed = 3;
+        
+        // Player
+        const player = {
+            x: 100,
+            y: 300,
+            width: 40,
+            height: 40,
+            velocityY: 0,
+            jumping: false
+        };
+        
+        // Arrays for game objects
+        let obstacles = [];
+        let collectibles = [];
+        
+        // Constants
+        const GRAVITY = 0.5;
+        const JUMP_STRENGTH = -12;
+        const GROUND_Y = 300;
+        
+        // Initialize
+        document.getElementById('highScoreDisplay').textContent = highScore;
+        
+        // Input handling
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !player.jumping && gameRunning) {
+                jump();
+            }
         });
         
-        function calculateROI() {
-            // Get input values
-            const investment = parseFloat(document.getElementById('investment').value);
-            const revenue = parseFloat(document.getElementById('revenue').value);
-            const costs = parseFloat(document.getElementById('costs').value) || 0;
-            
-            // Calculate metrics
-            const totalCost = investment + costs;
-            const netProfit = revenue - totalCost;
-            const roiPercent = (netProfit / totalCost) * 100;
-            const returnPerDollar = revenue / totalCost;
-            
-            // Display results
-            document.getElementById('netProfit').textContent = `$${netProfit.toFixed(2)}`;
-            document.getElementById('netProfit').className = 'result-value ' + (netProfit >= 0 ? 'positive' : 'negative');
-            
-            document.getElementById('roiPercent').textContent = `${roiPercent.toFixed(2)}%`;
-            document.getElementById('roiPercent').className = 'result-value ' + (roiPercent >= 0 ? 'positive' : 'negative');
-            
-            document.getElementById('returnPerDollar').textContent = `$${returnPerDollar.toFixed(2)}`;
-            
-            // Generate interpretation
-            let interpretation = '';
-            if (roiPercent > 100) {
-                interpretation = `Excellent! Your campaign generated over ${roiPercent.toFixed(0)}% ROI. For every dollar spent, you earned $${returnPerDollar.toFixed(2)}. This is a highly profitable campaign that should be scaled.`;
-            } else if (roiPercent > 50) {
-                interpretation = `Great performance! With a ${roiPercent.toFixed(0)}% ROI, your campaign is profitable. Consider optimizing and scaling this strategy.`;
-            } else if (roiPercent > 0) {
-                interpretation = `Positive ROI of ${roiPercent.toFixed(0)}%. While profitable, there's room for optimization to improve returns.`;
-            } else if (roiPercent === 0) {
-                interpretation = `Break-even point. Your revenue exactly matches your investment. Consider ways to increase efficiency or revenue.`;
-            } else {
-                interpretation = `Negative ROI of ${roiPercent.toFixed(0)}%. This campaign lost money. Analyze what went wrong and adjust your strategy before continuing.`;
+        canvas.addEventListener('click', () => {
+            if (!player.jumping && gameRunning) {
+                jump();
             }
-            
-            document.getElementById('interpretationText').textContent = interpretation;
-            
-            // Show results
-            document.getElementById('results').classList.add('show');
+        });
+        
+        function jump() {
+            player.velocityY = JUMP_STRENGTH;
+            player.jumping = true;
         }
         
-        function resetForm() {
-            document.getElementById('roiForm').reset();
-            document.getElementById('results').classList.remove('show');
+        // Spawn obstacles
+        function spawnObstacle() {
+            const height = Math.random() * 60 + 40;
+            obstacles.push({
+                x: canvas.width,
+                y: GROUND_Y + player.height - height,
+                width: 30,
+                height: height,
+                passed: false
+            });
         }
+        
+        // Spawn collectibles
+        function spawnCollectible() {
+            const y = Math.random() * 200 + 100;
+            collectibles.push({
+                x: canvas.width,
+                y: y,
+                size: 25,
+                collected: false
+            });
+        }
+        
+        // Draw player (cougar)
+        function drawPlayer() {
+            ctx.fillStyle = '#002E5D';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            
+            // Simple cougar face
+            ctx.fillStyle = 'white';
+            ctx.fillRect(player.x + 25, player.y + 10, 8, 8); // eye
+            ctx.fillStyle = '#002E5D';
+            ctx.fillRect(player.x + 27, player.y + 12, 4, 4); // pupil
+        }
+        
+        // Draw obstacles
+        function drawObstacles() {
+            ctx.fillStyle = '#8B0000';
+            obstacles.forEach(obs => {
+                ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+            });
+        }
+        
+        // Draw collectibles (Y logo)
+        function drawCollectibles() {
+            collectibles.forEach(col => {
+                if (!col.collected) {
+                    // Draw Y
+                    ctx.font = 'bold 30px Arial';
+                    ctx.fillStyle = '#0062B8';
+                    ctx.fillText('Y', col.x, col.y);
+                }
+            });
+        }
+        
+        // Update game state
+        function update() {
+            if (!gameRunning) return;
+            
+            // Update player physics
+            player.velocityY += GRAVITY;
+            player.y += player.velocityY;
+            
+            // Ground collision
+            if (player.y >= GROUND_Y) {
+                player.y = GROUND_Y;
+                player.velocityY = 0;
+                player.jumping = false;
+            }
+            
+            // Update obstacles
+            obstacles.forEach((obs, index) => {
+                obs.x -= gameSpeed;
+                
+                // Check collision
+                if (checkCollision(player, obs)) {
+                    endGame();
+                }
+                
+                // Score point when passing obstacle
+                if (!obs.passed && obs.x + obs.width < player.x) {
+                    obs.passed = true;
+                    score += 10;
+                    updateScore();
+                }
+                
+                // Remove off-screen obstacles
+                if (obs.x + obs.width < 0) {
+                    obstacles.splice(index, 1);
+                }
+            });
+            
+            // Update collectibles
+            collectibles.forEach((col, index) => {
+                col.x -= gameSpeed;
+                
+                // Check collection
+                if (!col.collected && 
+                    player.x < col.x + col.size &&
+                    player.x + player.width > col.x &&
+                    player.y < col.y + col.size &&
+                    player.y + player.height > col.y - col.size) {
+                    col.collected = true;
+                    score += 50;
+                    updateScore();
+                }
+                
+                // Remove off-screen collectibles
+                if (col.x + col.size < 0) {
+                    collectibles.splice(index, 1);
+                }
+            });
+            
+            // Increase difficulty
+            if (score % 200 === 0 && score > 0) {
+                gameSpeed += 0.2;
+            }
+        }
+        
+        function checkCollision(player, obstacle) {
+            return player.x < obstacle.x + obstacle.width &&
+                   player.x + player.width > obstacle.x &&
+                   player.y < obstacle.y + obstacle.height &&
+                   player.y + player.height > obstacle.y;
+        }
+        
+        function updateScore() {
+            document.getElementById('scoreDisplay').textContent = score;
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('byuCougarHighScore', highScore);
+                document.getElementById('highScoreDisplay').textContent = highScore;
+            }
+        }
+        
+        function endGame() {
+            gameRunning = false;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('gameOver').classList.add('show');
+        }
+        
+        function restartGame() {
+            gameRunning = true;
+            score = 0;
+            gameSpeed = 3;
+            player.y = GROUND_Y;
+            player.velocityY = 0;
+            player.jumping = false;
+            obstacles = [];
+            collectibles = [];
+            document.getElementById('scoreDisplay').textContent = '0';
+            document.getElementById('gameOver').classList.remove('show');
+        }
+        
+        // Draw everything
+        function draw() {
+            // Clear canvas
+            ctx.fillStyle = '#f0f4f8';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw ground
+            ctx.fillStyle = '#002E5D';
+            ctx.fillRect(0, GROUND_Y + player.height, canvas.width, 2);
+            
+            drawPlayer();
+            drawObstacles();
+            drawCollectibles();
+        }
+        
+        // Game loop
+        let obstacleTimer = 0;
+        let collectibleTimer = 0;
+        
+        function gameLoop() {
+            update();
+            draw();
+            
+            // Spawn obstacles
+            if (gameRunning) {
+                obstacleTimer++;
+                if (obstacleTimer > 100) {
+                    spawnObstacle();
+                    obstacleTimer = 0;
+                }
+                
+                // Spawn collectibles
+                collectibleTimer++;
+                if (collectibleTimer > 150) {
+                    spawnCollectible();
+                    collectibleTimer = Math.random() * 50;
+                }
+            }
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Start game
+        gameLoop();
     </script>
 </body>
 </html>
