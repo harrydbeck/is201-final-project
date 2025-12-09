@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing ROI Calculator - Interactive Web App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .reset-btn {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .reset-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-radius: 12px;
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            color: #555;
+            font-weight: 600;
+        }
+        
+        .result-value {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .result-value.positive {
+            color: #2ecc71;
+        }
+        
+        .result-value.negative {
+            color: #e74c3c;
+        }
+        
+        .interpretation {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .interpretation h3 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .interpretation p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        
+        .back-link a:hover {
+            color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Marketing ROI Calculator</h1>
+        <p class="subtitle">Calculate the return on investment for your marketing campaigns</p>
+        
+        <form id="roiForm">
+            <div class="input-group">
+                <label for="investment">Total Marketing Investment ($)</label>
+                <input type="number" id="investment" placeholder="Enter total spend" required min="0" step="0.01">
+            </div>
+            
+            <div class="input-group">
+                <label for="revenue">Revenue Generated ($)</label>
+                <input type="number" id="revenue" placeholder="Enter revenue generated" required min="0" step="0.01">
+            </div>
+            
+            <div class="input-group">
+                <label for="costs">Additional Costs ($)</label>
+                <input type="number" id="costs" placeholder="Enter additional costs" value="0" min="0" step="0.01">
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="calculate-btn">Calculate ROI</button>
+                <button type="button" class="reset-btn" onclick="resetForm()">Reset</button>
+            </div>
+        </form>
+        
+        <div id="results" class="results">
+            <div class="result-item">
+                <span class="result-label">Net Profit:</span>
+                <span class="result-value" id="netProfit">$0.00</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">ROI Percentage:</span>
+                <span class="result-value" id="roiPercent">0%</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Return per Dollar:</span>
+                <span class="result-value" id="returnPerDollar">$0.00</span>
+            </div>
+            
+            <div class="interpretation" id="interpretation">
+                <h3>Interpretation</h3>
+                <p id="interpretationText"></p>
+            </div>
+        </div>
+        
+        <div class="back-link">
+            <a href="scratch.html">← Back to Projects</a> | 
+            <a href="index.html">Home</a>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('roiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateROI();
+        });
+        
+        function calculateROI() {
+            // Get input values
+            const investment = parseFloat(document.getElementById('investment').value);
+            const revenue = parseFloat(document.getElementById('revenue').value);
+            const costs = parseFloat(document.getElementById('costs').value) || 0;
+            
+            // Calculate metrics
+            const totalCost = investment + costs;
+            const netProfit = revenue - totalCost;
+            const roiPercent = (netProfit / totalCost) * 100;
+            const returnPerDollar = revenue / totalCost;
+            
+            // Display results
+            document.getElementById('netProfit').textContent = `$${netProfit.toFixed(2)}`;
+            document.getElementById('netProfit').className = 'result-value ' + (netProfit >= 0 ? 'positive' : 'negative');
+            
+            document.getElementById('roiPercent').textContent = `${roiPercent.toFixed(2)}%`;
+            document.getElementById('roiPercent').className = 'result-value ' + (roiPercent >= 0 ? 'positive' : 'negative');
+            
+            document.getElementById('returnPerDollar').textContent = `$${returnPerDollar.toFixed(2)}`;
+            
+            // Generate interpretation
+            let interpretation = '';
+            if (roiPercent > 100) {
+                interpretation = `Excellent! Your campaign generated over ${roiPercent.toFixed(0)}% ROI. For every dollar spent, you earned $${returnPerDollar.toFixed(2)}. This is a highly profitable campaign that should be scaled.`;
+            } else if (roiPercent > 50) {
+                interpretation = `Great performance! With a ${roiPercent.toFixed(0)}% ROI, your campaign is profitable. Consider optimizing and scaling this strategy.`;
+            } else if (roiPercent > 0) {
+                interpretation = `Positive ROI of ${roiPercent.toFixed(0)}%. While profitable, there's room for optimization to improve returns.`;
+            } else if (roiPercent === 0) {
+                interpretation = `Break-even point. Your revenue exactly matches your investment. Consider ways to increase efficiency or revenue.`;
+            } else {
+                interpretation = `Negative ROI of ${roiPercent.toFixed(0)}%. This campaign lost money. Analyze what went wrong and adjust your strategy before continuing.`;
+            }
+            
+            document.getElementById('interpretationText').textContent = interpretation;
+            
+            // Show results
+            document.getElementById('results').classList.add('show');
+        }
+        
+        function resetForm() {
+            document.getElementById('roiForm').reset();
+            document.getElementById('results').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
