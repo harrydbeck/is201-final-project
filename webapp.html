@@ -160,6 +160,11 @@
         <div class="back-links">
             <a href="scratch.html">← Back to Projects</a>
             <a href="index.html">Home</a>
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                <p style="margin-bottom: 10px; color: #666; font-size: 0.9em;">Connect with me:</p>
+                <a href="https://www.linkedin.com/in/harrison-beck04" target="_blank" style="margin: 0 10px;">LinkedIn</a>
+                <a href="https://www.instagram.com/harrydbeck/" target="_blank" style="margin: 0 10px;">Instagram</a>
+            </div>
         </div>
     </div>
     
@@ -177,11 +182,11 @@
         let score = 0;
         let highScore = localStorage.getItem('byuCougarHighScore') || 0;
         let gameRunning = true;
-        let gameSpeed = 3;
+        let gameSpeed = 2.5;
         
         // Player
         const player = {
-            x: 100,
+            x: 100
             y: 300,
             width: 40,
             height: 40,
@@ -363,12 +368,12 @@
         function restartGame() {
             gameRunning = true;
             score = 0;
-            gameSpeed = 3;
+            gameSpeed = 2.5;
             player.y = GROUND_Y;
             player.velocityY = 0;
             player.jumping = false;
-            obstacles = [];
-            collectibles = [];
+        obstacles = [];
+        collectibles = [];
             document.getElementById('scoreDisplay').textContent = '0';
             document.getElementById('gameOver').classList.remove('show');
         }
@@ -399,7 +404,7 @@
             // Spawn obstacles
             if (gameRunning) {
                 obstacleTimer++;
-                if (obstacleTimer > 100) {
+                if (obstacleTimer > 150) {
                     spawnObstacle();
                     obstacleTimer = 0;
                 }
