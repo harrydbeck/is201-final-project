@@ -424,3 +424,81 @@
             player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
 
             // Reset
+                    if (player.y > canvas.height) {
+            gameOver();
+        }
+    }
+
+    function gameOver() {
+        gameRunning = false;
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem('momentumRunnerHS', highScore);
+            document.getElementById('highScoreDisplay').textContent = highScore;
+        }
+    }
+
+    function draw() {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw platforms
+        ctx.fillStyle = '#667eea';
+        platforms.forEach(plat => {
+            ctx.beginPath();
+            if (plat.slope === 0) {
+                ctx.fillRect(plat.x - scrollSpeed, plat.y, plat.width, plat.height);
+            } else {
+                // Draw sloped platform
+                const slopeHeight = plat.width * plat.slope;
+                ctx.moveTo(plat.x - scrollSpeed, plat.y);
+                ctx.lineTo(plat.x - scrollSpeed + plat.width, plat.y + slopeHeight);
+                ctx.lineTo(plat.x - scrollSpeed + plat.width, plat.y + slopeHeight + plat.height);
+                ctx.lineTo(plat.x - scrollSpeed, plat.y + plat.height);
+                ctx.closePath();
+                ctx.fill();
+            }
+        });
+
+        // Draw player
+        ctx.fillStyle = '#764ba2';
+        ctx.fillRect(player.x, player.y, player.width, player.height);
+
+        // Draw gems
+        ctx.fillStyle = '#FFD700';
+        gems.forEach(gem => {
+            if (!gem.collected) {
+                ctx.beginPath();
+                ctx.arc(gem.x - scrollSpeed, gem.y, gem.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        });
+
+        // Draw obstacles
+        ctx.fillStyle = '#FF4444';
+        obstacles.forEach(obs => {
+            ctx.fillRect(obs.x - scrollSpeed, obs.y, obs.width, obs.height);
+        });
+
+        // Draw particles
+        ctx.fillStyle = '#667eea';
+        particles.forEach(p => {
+            ctx.globalAlpha = p.life / p.maxLife;
+            ctx.fillRect(p.x, p.y, p.size, p.size);
+        });
+        ctx.globalAlpha = 1;
+    }
+
+    function gameLoop() {
+        if (gameRunning) {
+            update();
+            draw();
+        }
+        requestAnimationFrame(gameLoop);
+    }
+
+    // Start game
+    gameLoop();
+    </script>
+</body>
+</html>
