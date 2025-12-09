@@ -227,6 +227,8 @@
             </div>
         </div>
 
+                <button id="startBtn" class="restart-btn" style="margin: 20px 0;">Start Game</button>
+
         <canvas id="gameCanvas" width="800" height="450"></canvas>
 
         <div class="controls">
@@ -260,7 +262,7 @@
         // Game state
         let score = 0;
         let highScore = localStorage.getItem('momentumRunnerHS') || 0;
-        let gameRunning = true;
+        let gameRunning = false;
         let baseSpeed = 4;
         let scrollSpeed = baseSpeed;
 
@@ -294,6 +296,12 @@
         // Initialize
         document.getElementById('highScoreDisplay').textContent = highScore;
         createInitialPlatforms();
+
+            // Start button handler
+    document.getElementById('startBtn').addEventListener('click', () => {
+        gameRunning = true;
+        document.getElementById('startBtn').style.display = 'none';
+    });
 
         // Input handling
         const keys = {};
