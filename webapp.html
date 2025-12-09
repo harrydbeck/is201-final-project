@@ -3,425 +3,428 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BYU Cougar Collector - Playable Game</title>
+    <title>Momentum Runner - Interactive Game</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #002E5D 0%, #0062B8 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
         }
-        
+
         .game-container {
             text-align: center;
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 800px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            backdrop-filter: blur(10px);
         }
-        
+
         h1 {
-            color: #002E5D;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
             font-size: 2.5em;
+            font-weight: 800;
         }
-        
+
         .subtitle {
             color: #666;
             margin-bottom: 20px;
+            font-size: 1.1em;
         }
-        
+
         #gameCanvas {
-            border: 4px solid #002E5D;
-            border-radius: 10px;
-            background: #f0f4f8;
-            cursor: pointer;
+            border: 4px solid #667eea;
+            border-radius: 15px;
+            background: linear-gradient(180deg, #e0e7ff 0%, #f0f4ff 100%);
+            cursor: crosshair;
             max-width: 100%;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
         }
-        
+
         .stats {
             display: flex;
             justify-content: space-around;
             margin: 20px 0;
             gap: 20px;
         }
-        
+
         .stat-box {
-            background: linear-gradient(135deg, #002E5D 0%, #0062B8 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 15px 30px;
-            border-radius: 10px;
+            border-radius: 15px;
             flex: 1;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            transition: transform 0.2s;
         }
-        
+
+        .stat-box:hover {
+            transform: translateY(-3px);
+        }
+
         .stat-label {
             font-size: 0.9em;
             opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        
+
         .stat-value {
-            font-size: 2em;
+            font-size: 2.2em;
             font-weight: bold;
             margin-top: 5px;
         }
-        
+
         .controls {
             margin-top: 20px;
             color: #666;
             font-size: 0.95em;
+            line-height: 1.6;
         }
-        
+
+        .controls strong {
+            color: #667eea;
+        }
+
         .game-over {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
             display: none;
             z-index: 10;
+            min-width: 350px;
         }
-        
+
         .game-over.show {
             display: block;
+            animation: slideIn 0.3s ease-out;
         }
-        
+
+        @keyframes slideIn {
+            from {
+                transform: translate(-50%, -60%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%);
+                opacity: 1;
+            }
+        }
+
         .game-over h2 {
-            color: #002E5D;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 20px;
+            font-size: 2em;
         }
-        
+
         .restart-btn {
-            background: linear-gradient(135deg, #002E5D 0%, #0062B8 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 15px 40px;
-            border-radius: 25px;
-            font-size: 1.1em;
+            padding: 15px 45px;
+            border-radius: 30px;
+            font-size: 1.2em;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
-        
+
         .restart-btn:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
         }
-        
-        .back-links {
-            margin-top: 20px;
+
+        .restart-btn:active {
+            transform: translateY(-1px);
         }
-        
-        .back-links a {
-            color: #002E5D;
+
+        .links {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e7ff;
+        }
+
+        .links a {
+            color: #667eea;
             text-decoration: none;
             margin: 0 15px;
             font-weight: 600;
+            transition: color 0.3s;
         }
-        
-        .back-links a:hover {
+
+        .links a:hover {
+            color: #764ba2;
             text-decoration: underline;
+        }
+
+        .social-links {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e7ff;
+        }
+
+        .social-links a {
+            display: inline-block;
+            margin: 0 12px;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .speed-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            color: #667eea;
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <h1>🐾 BYU Cougar Collector</h1>
-        <p class="subtitle">Collect the Y's and avoid obstacles!</p>
-        
+        <h1>⚡ Momentum Runner</h1>
+        <p class="subtitle">Master the slopes and collect gems!</p>
+
         <div class="stats">
             <div class="stat-box">
-                <div class="stat-label">SCORE</div>
+                <div class="stat-label">Score</div>
                 <div class="stat-value" id="scoreDisplay">0</div>
             </div>
             <div class="stat-box">
-                <div class="stat-label">HIGH SCORE</div>
+                <div class="stat-label">Best</div>
                 <div class="stat-value" id="highScoreDisplay">0</div>
             </div>
         </div>
-        
-        <canvas id="gameCanvas" width="700" height="400"></canvas>
-        
+
+        anvas id="gameCanvas" width="800" height="450"></canvas>
+
         <div class="controls">
-            👆 Click or press SPACE to jump | Collect Y logos | Avoid obstacles!
+            <strong>Controls:</strong> A/D or ← → to move | <strong>SPACE</strong> to jump<br>
+            💨 Build momentum on slopes | 💎 Collect gems | ⚠️ Avoid obstacles!
         </div>
-        
-        <div class="back-links">
+
+        <div class="links">
             <a href="scratch.html">← Back to Projects</a>
             <a href="index.html">Home</a>
-                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
-                <p style="margin-bottom: 10px; color: #666; font-size: 0.9em;">Connect with me:</p>
-                <a href="https://www.linkedin.com/in/harrison-beck04" target="_blank" style="margin: 0 10px;">LinkedIn</a>
-                <a href="https://www.instagram.com/harrydbeck/" target="_blank" style="margin: 0 10px;">Instagram</a>
-            </div>
+        </div>
+
+        <div class="social-links">
+            <a href="https://www.linkedin.com/in/harrison-beck04" target="_blank">LinkedIn</a>
+            <a href="https://www.instagram.com/harrydbeck/" target="_blank">Instagram</a>
         </div>
     </div>
-    
+
     <div class="game-over" id="gameOver">
         <h2>Game Over!</h2>
-        <p style="font-size: 1.2em; margin: 20px 0;">Final Score: <strong id="finalScore">0</strong></p>
+        <p style="font-size: 1.3em; margin: 20px 0; color: #666;">
+            Final Score: <strong id="finalScore" style="color: #667eea; font-size: 1.4em;">0</strong>
+        </p>
         <button class="restart-btn" onclick="restartGame()">Play Again</button>
     </div>
-    
+
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        
-        // Game variables
+
+        // Game state
         let score = 0;
-        let highScore = localStorage.getItem('byuCougarHighScore') || 0;
+        let highScore = localStorage.getItem('momentumRunnerHS') || 0;
         let gameRunning = true;
-        let gameSpeed = 2.5;
-        
-        // Player
+        let baseSpeed = 4;
+        let scrollSpeed = baseSpeed;
+
+        // Player with momentum physics
         const player = {
-            x: 100,
+            x: 150,
             y: 300,
-            width: 40,
-            height: 40,
+            width: 30,
+            height: 30,
+            velocityX: 0,
             velocityY: 0,
-            jumping: false
+            speed: 0,
+            maxSpeed: 12,
+            acceleration: 0.5,
+            friction: 0.92,
+            jumping: false,
+            onGround: false
         };
-        
-        // Arrays for game objects
+
+        // Game objects
+        let platforms = [];
+        let gems = [];
         let obstacles = [];
-        let collectibles = [];
-        
-        // Constants
-        const GRAVITY = 0.5;
-        const JUMP_STRENGTH = -12;
-        const GROUND_Y = 300;
-        
+        let particles = [];
+
+        // Physics constants
+        const GRAVITY = 0.6;
+        const JUMP_POWER = -13;
+        const GROUND_Y = 350;
+
         // Initialize
         document.getElementById('highScoreDisplay').textContent = highScore;
-        
+        createInitialPlatforms();
+
         // Input handling
+        const keys = {};
         document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && !player.jumping && gameRunning) {
+            keys[e.key] = true;
+            if (e.key === ' ' && player.onGround && gameRunning) {
+                e.preventDefault();
                 jump();
             }
         });
-        
-        canvas.addEventListener('click', () => {
-            if (!player.jumping && gameRunning) {
-                jump();
-            }
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
         });
-        
+
         function jump() {
-            player.velocityY = JUMP_STRENGTH;
+            player.velocityY = JUMP_POWER;
             player.jumping = true;
+            player.onGround = false;
+            createParticles(player.x + player.width/2, player.y + player.height, '#667eea', 8);
         }
-        
-        // Spawn obstacles
-        function spawnObstacle() {
-            const height = Math.random() * 60 + 40;
-            obstacles.push({
-                x: canvas.width,
-                y: GROUND_Y + player.height - height,
-                width: 30,
-                height: height,
-                passed: false
+
+        function createInitialPlatforms() {
+            // Create ground
+            platforms.push({
+                x: 0,
+                y: GROUND_Y,
+                width: canvas.width * 3,
+                height: 100,
+                slope: 0
             });
+
+            // Create varied platforms
+            for (let i = 1; i < 10; i++) {
+                const slopeType = Math.random();
+                let slope = 0;
+                if (slopeType < 0.3) slope = -0.3; // Upward
+                else if (slopeType < 0.6) slope = 0.3; // Downward
+                
+                platforms.push({
+                    x: i * 200,
+                    y: 250 + Math.random() * 100,
+                    width: 150 + Math.random() * 100,
+                    height: 20,
+                    slope: slope
+                });
+            }
         }
-        
-        // Spawn collectibles
-        function spawnCollectible() {
-            const y = Math.random() * 200 + 100;
-            collectibles.push({
-                x: canvas.width,
-                y: y,
-                size: 25,
-                collected: false
+
+        function spawnPlatform() {
+            const lastPlatform = platforms[platforms.length - 1];
+            const slopeType = Math.random();
+            let slope = 0;
+            if (slopeType < 0.35) slope = -0.4;
+            else if (slopeType < 0.7) slope = 0.4;
+
+            platforms.push({
+                x: lastPlatform.x + lastPlatform.width + 100 + Math.random() * 150,
+                y: 200 + Math.random() * 150,
+                width: 120 + Math.random() * 180,
+                height: 20,
+                slope: slope
             });
+
+            // Spawn gem on platform
+            if (Math.random() < 0.6) {
+                const lastPlat = platforms[platforms.length - 1];
+                gems.push({
+                    x: lastPlat.x + lastPlat.width/2,
+                    y: lastPlat.y - 40,
+                    size: 15,
+                    collected: false,
+                    pulse: 0
+                });
+            }
+
+            // Spawn obstacle
+            if (Math.random() < 0.3) {
+                const lastPlat = platforms[platforms.length - 1];
+                obstacles.push({
+                    x: lastPlat.x + lastPlat.width/2,
+                    y: lastPlat.y - 35,
+                    width: 25,
+                    height: 35
+                });
+            }
         }
-        
-        // Draw player (cougar)
-        function drawPlayer() {
-            ctx.fillStyle = '#002E5D';
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-            
-            // Simple cougar face
-            ctx.fillStyle = 'white';
-            ctx.fillRect(player.x + 25, player.y + 10, 8, 8); // eye
-            ctx.fillStyle = '#002E5D';
-            ctx.fillRect(player.x + 27, player.y + 12, 4, 4); // pupil
+
+        function createParticles(x, y, color, count) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 0.5) * 6,
+                    life: 30,
+                    maxLife: 30,
+                    size: Math.random() * 4 + 2,
+                    color: color
+                });
+            }
         }
-        
-        // Draw obstacles
-        function drawObstacles() {
-            ctx.fillStyle = '#8B0000';
-            obstacles.forEach(obs => {
-                ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-            });
-        }
-        
-        // Draw collectibles (Y logo)
-        function drawCollectibles() {
-            collectibles.forEach(col => {
-                if (!col.collected) {
-                    // Draw Y
-                    ctx.font = 'bold 30px Arial';
-                    ctx.fillStyle = '#0062B8';
-                    ctx.fillText('Y', col.x, col.y);
-                }
-            });
-        }
-        
-        // Update game state
+
         function update() {
             if (!gameRunning) return;
-            
-            // Update player physics
+
+            // Horizontal movement with momentum
+            if (keys['a'] || keys['A'] || keys['ArrowLeft']) {
+                player.velocityX -= player.acceleration;
+            }
+            if (keys['d'] || keys['D'] || keys['ArrowRight']) {
+                player.velocityX += player.acceleration;
+            }
+
+            // Apply friction and speed limits
+            player.velocityX *= player.friction;
+            player.velocityX = Math.max(-player.maxSpeed, Math.min(player.maxSpeed, player.velocityX));
+
+            // Apply gravity
             player.velocityY += GRAVITY;
+            player.velocityY = Math.min(player.velocityY, 20);
+
+            // Update position
+            player.x += player.velocityX;
             player.y += player.velocityY;
-            
-            // Ground collision
-            if (player.y >= GROUND_Y) {
-                player.y = GROUND_Y;
-                player.velocityY = 0;
-                player.jumping = false;
-            }
-            
-            // Update obstacles
-            obstacles.forEach((obs, index) => {
-                obs.x -= gameSpeed;
-                
-                // Check collision
-                if (checkCollision(player, obs)) {
-                    endGame();
-                }
-                
-                // Score point when passing obstacle
-                if (!obs.passed && obs.x + obs.width < player.x) {
-                    obs.passed = true;
-                    score += 10;
-                    updateScore();
-                }
-                
-                // Remove off-screen obstacles
-                if (obs.x + obs.width < 0) {
-                    obstacles.splice(index, 1);
-                }
-            });
-            
-            // Update collectibles
-            collectibles.forEach((col, index) => {
-                col.x -= gameSpeed;
-                
-                // Check collection
-                if (!col.collected && 
-                    player.x < col.x + col.size &&
-                    player.x + player.width > col.x &&
-                    player.y < col.y + col.size &&
-                    player.y + player.height > col.y - col.size) {
-                    col.collected = true;
-                    score += 50;
-                    updateScore();
-                }
-                
-                // Remove off-screen collectibles
-                if (col.x + col.size < 0) {
-                    collectibles.splice(index, 1);
-                }
-            });
-            
-            // Increase difficulty
-            if (score % 200 === 0 && score > 0) {
-                gameSpeed += 0.2;
-            }
-        }
-        
-        function checkCollision(player, obstacle) {
-            return player.x < obstacle.x + obstacle.width &&
-                   player.x + player.width > obstacle.x &&
-                   player.y < obstacle.y + obstacle.height &&
-                   player.y + player.height > obstacle.y;
-        }
-        
-        function updateScore() {
-            document.getElementById('scoreDisplay').textContent = score;
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem('byuCougarHighScore', highScore);
-                document.getElementById('highScoreDisplay').textContent = highScore;
-            }
-        }
-        
-        function endGame() {
-            gameRunning = false;
-            document.getElementById('finalScore').textContent = score;
-            document.getElementById('gameOver').classList.add('show');
-        }
-        
-        function restartGame() {
-            gameRunning = true;
-            score = 0;
-            gameSpeed = 2.5;
-            player.y = GROUND_Y;
-            player.velocityY = 0;
-            player.jumping = false;
-        obstacles = [];
-        collectibles = [];
-            document.getElementById('scoreDisplay').textContent = '0';
-            document.getElementById('gameOver').classList.remove('show');
-        }
-        
-        // Draw everything
-        function draw() {
-            // Clear canvas
-            ctx.fillStyle = '#f0f4f8';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw ground
-            ctx.fillStyle = '#002E5D';
-            ctx.fillRect(0, GROUND_Y + player.height, canvas.width, 2);
-            
-            drawPlayer();
-            drawObstacles();
-            drawCollectibles();
-        }
-        
-        // Game loop
-        let obstacleTimer = 0;
-        let collectibleTimer = 0;
-        
-        function gameLoop() {
-            update();
-            draw();
-            
-            // Spawn obstacles
-            if (gameRunning) {
-                obstacleTimer++;
-                if (obstacleTimer > 150) {
-                    spawnObstacle();
-                    obstacleTimer = 0;
-                }
-                
-                // Spawn collectibles
-                collectibleTimer++;
-                if (collectibleTimer > 150) {
-                    spawnCollectible();
-                    collectibleTimer = Math.random() * 50;
-                }
-            }
-            
-            requestAnimationFrame(gameLoop);
-        }
-        
-        // Start game
-        gameLoop();
-    </script>
-</body>
-</html>
+
+            // Keep player in bounds
+            player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+
+            // Reset
