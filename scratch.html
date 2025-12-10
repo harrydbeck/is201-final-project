@@ -2,250 +2,164 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Scratch Projects - Harrison Beck</title>
+    <title>Scratch Page - Harrison Beck</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        /* Basic reset */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #333333;
-        }
-
-        .wrapper {
-            max-width: 900px;
-            margin: 20px auto 40px auto;
-            background-color: #ffffff;
-            border-radius: 8px;
-            padding: 20px 20px 30px 20px;
-        }
-
-        header {
-            border-bottom: 1px solid #dddddd;
-            padding-bottom: 12px;
-            margin-bottom: 16px;
-        }
-
-        header h1 {
-            font-size: 2rem;
-            color: #4f46e5;
-        }
-
-        header p {
-            margin-top: 4px;
-            font-size: 0.95rem;
-            color: #555555;
-        }
-
-        nav {
-            margin-top: 10px;
-        }
-
-        nav a {
-            display: inline-block;
-            margin-right: 10px;
-            padding: 6px 10px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            background-color: #e0e7ff;
-            color: #333333;
-            border-radius: 4px;
-            border: 1px solid #c7d2fe;
-        }
-
-        nav a:hover {
-            background-color: #c7d2fe;
-        }
-
-        .intro {
-            background-color: #f3f4ff;
-            border: 1px solid #e0e7ff;
-            border-radius: 6px;
-            padding: 10px 12px;
-            font-size: 0.95rem;
-            margin-bottom: 18px;
-        }
-
-        .intro p {
-            margin-bottom: 6px;
-        }
-
-        .projects-title {
-            margin-bottom: 8px;
-            font-size: 1.2rem;
-            color: #111827;
-        }
-
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 14px;
-        }
-
-        .project-card {
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 10px 12px 12px 12px;
-            background-color: #fdfdfd;
-        }
-
-        .project-card h2 {
-            font-size: 1rem;
-            margin-bottom: 4px;
-            color: #111827;
-        }
-
-        .project-tag {
-            font-size: 0.8rem;
-            color: #4f46e5;
-            background-color: #e0e7ff;
-            padding: 2px 6px;
-            border-radius: 10px;
-            display: inline-block;
-            margin-bottom: 6px;
-        }
-
-        .project-card p {
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-            color: #4b5563;
-        }
-
-        .project-meta {
-            font-size: 0.8rem;
-            color: #6b7280;
-            margin-bottom: 8px;
-        }
-
-        .project-links a {
-            display: inline-block;
-            font-size: 0.85rem;
-            text-decoration: none;
-            padding: 5px 8px;
-            margin-right: 6px;
-            border-radius: 4px;
-            border: 1px solid #c7d2fe;
-            background-color: #e0e7ff;
-            color: #1f2933;
-        }
-
-        .project-links a.secondary {
-            background-color: #f3f4f6;
-            border-color: #d1d5db;
-        }
-
-        .project-links a:hover {
-            background-color: #c7d2fe;
-        }
-
-        footer {
-            margin-top: 22px;
-            padding-top: 10px;
-            border-top: 1px solid #e5e7eb;
-            font-size: 0.85rem;
-            color: #6b7280;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        footer a {
-            color: #4f46e5;
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-
-        @media (max-width: 600px) {
-            .wrapper {
-                margin: 10px;
-                padding: 14px;
-            }
-        }
-    </style>
+    <!-- Link to your from-scratch stylesheet -->
+    <link rel="stylesheet" href="scratch.css">
 </head>
 <body>
 <div class="wrapper">
     <header>
-        <h1>Scratch & Web Games</h1>
-        <p>Small projects built in Scratch and the browser.</p>
+        <h1 id="top">Scratch & Web Experiments</h1>
+        <p>A simple from-scratch page for IS 201 showing some of my interests and projects.</p>
 
         <nav>
             <a href="index.html">Home</a>
-            <a href="scratch.html">Scratch</a>
-            <a href="momentum-runner.html">Momentum Runner</a>
+            <a href="scratch.html">Scratch Page</a>
+            <a href="webapp.html">Momentum Runner Web Game</a>
         </nav>
     </header>
 
     <section class="intro">
-        <p>A handful of homemade projects that explore momentum, timing, and simple gameplay ideas.</p>
-        <p><strong>Tip:</strong> Most of these play best in a larger window.</p>
+        <p>
+            This page mixes a few things that interest me: simple games (like Momentum Runner),
+            data visualizations, and learning new tools. It is intentionally more casual than the
+            rest of my site.
+        </p>
+        <p><strong>Note:</strong> This page was built from a blank HTML file with a custom CSS file.</p>
     </section>
 
-    <h2 class="projects-title">Projects</h2>
+    <h2 class="projects-title">What you can find on this page</h2>
 
+    <!-- Ordered list with an embedded unordered list -->
+    <section class="lists-section">
+        <ol>
+            <li>
+                Games and projects
+                <ul>
+                    <li>Link to my Momentum Runner web app (HTML/JS)</li>
+                    <li>Links to some Scratch projects</li>
+                    <li>A short description of why I built them</li>
+                </ul>
+            </li>
+            <li>
+                Media and embeds
+                <ul>
+                    <li>An image related to games / data</li>
+                    <li>An embedded YouTube video about web or data</li>
+                    <li>An embedded Tableau graph</li>
+                </ul>
+            </li>
+            <li>
+                Navigation
+                <ul>
+                    <li>Link back to my more professional pages</li>
+                    <li>An on-page anchor link to jump to the Tableau section</li>
+                </ul>
+            </li>
+        </ol>
+    </section>
+
+    <!-- Simple “about games” section reusing original content ideas -->
     <section class="projects-grid">
-        <!-- Project 1 -->
         <article class="project-card">
-            <span class="project-tag">Platformer</span>
-            <h2>Momentum Runner (Scratch)</h2>
-            <p>A physics-inspired runner where you build momentum on slopes and try to avoid wiping out.</p>
-            <p class="project-meta">2024 · Scratch · Keyboard controls</p>
+            <span class="project-tag">Web App</span>
+            <h2>Momentum Runner (Web)</h2>
+            <p>
+                Momentum Runner started as a Scratch project and then became a web app.
+                It is a simple platformer where you run, jump, and collect items while
+                trying to keep your speed under control.
+            </p>
+            <p class="project-meta">HTML · CSS · JavaScript</p>
             <div class="project-links">
-                <a href="https://scratch.mit.edu/projects/YOUR_PROJECT_ID" target="_blank">Play on Scratch</a>
-                <a href="momentum-runner.html" class="secondary">HTML demo</a>
+                <a href="webapp.html">Open webapp.html</a>
             </div>
         </article>
 
-        <!-- Project 2 -->
         <article class="project-card">
-            <span class="project-tag">Arcade</span>
-            <h2>Gem Hopper</h2>
-            <p>Jump between platforms and collect gems before the timer runs out.</p>
-            <p class="project-meta">2024 · Scratch · Short sessions</p>
+            <span class="project-tag">Scratch</span>
+            <h2>Scratch Prototypes</h2>
+            <p>
+                I use Scratch to try out ideas quickly before building them as real web apps.
+                Many of these games are short and focus on one mechanic, like jumping or timing.
+            </p>
+            <p class="project-meta">Various small games and experiments</p>
             <div class="project-links">
-                <a href="https://scratch.mit.edu/projects/YOUR_PROJECT_ID" target="_blank">Play on Scratch</a>
-                <a href="#" class="secondary">Notes</a>
+                <a href="https://scratch.mit.edu/" target="_blank">Visit Scratch</a>
             </div>
         </article>
 
-        <!-- Project 3 -->
         <article class="project-card">
-            <span class="project-tag">Mini-game</span>
-            <h2>Reaction Dash</h2>
-            <p>A reaction-speed game where you press keys at just the right time as prompts move across the screen.</p>
-            <p class="project-meta">2023 · Scratch · Reflex test</p>
+            <span class="project-tag">Learning</span>
+            <h2>Why I like small projects</h2>
+            <p>
+                Small projects are easier to finish and share. They also make it easier to test
+                new ideas in design, data, or code without a big commitment.
+            </p>
+            <p class="project-meta">Built while learning in IS 201</p>
             <div class="project-links">
-                <a href="https://scratch.mit.edu/projects/YOUR_PROJECT_ID" target="_blank">Play on Scratch</a>
-                <a href="#" class="secondary">Sketches</a>
+                <a href="#tableau-section" class="secondary">Jump to Tableau graph</a>
             </div>
         </article>
+    </section>
 
-        <!-- Project 4 -->
-        <article class="project-card">
-            <span class="project-tag">Misc</span>
-            <h2>Prototype Shelf</h2>
-            <p>A collection of in-progress experiments that may become full projects later.</p>
-            <p class="project-meta">Ongoing · Scratch & Web</p>
-            <div class="project-links">
-                <a href="https://scratch.mit.edu/users/YOUR_SCRATCH_USERNAME" target="_blank">Scratch profile</a>
-                <a href="index.html" class="secondary">Back to portfolio</a>
-            </div>
-        </article>
+    <!-- Image section -->
+    <section class="media-section">
+        <h2>Game & Data Inspiration</h2>
+        <p>
+            Below is a simple image related to data and dashboards. It represents the kind of
+            information a game might track: scores, attempts, and progress over time.
+        </p>
+
+        <!-- Replace src with any image file in your project folder -->
+        <img src="dashboard-placeholder.png" alt="Simple dashboard style graphic" class="simple-image">
+    </section>
+
+    <!-- Embedded YouTube video -->
+    <section class="media-section">
+        <h2>Video: HTML & CSS Basics</h2>
+        <p>
+            This YouTube video is an example of the kind of tutorials that helped with projects
+            like this Scratch page and the Momentum Runner web app.
+        </p>
+        <div class="video-container">
+            <iframe width="560" height="315"
+                    src="https://www.youtube.com/embed/qz0aGYrrlhU"
+                    title="HTML Tutorial for Beginners"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+            </iframe>
+        </div>
+    </section>
+
+    <!-- Tableau section with anchor -->
+    <section class="media-section" id="tableau-section">
+        <h2>Embedded Tableau Graph</h2>
+        <p>
+            This embedded Tableau dashboard is an example of how game data or class-related data
+            could be visualized. It is live and interactive, not just a screenshot.
+        </p>
+
+        <!-- Example public Tableau embed (replace with any dashboard you prefer) -->
+        <div class="tableau-container">
+            <iframe
+                src="https://public.tableau.com/views/RegionalSampleWorkbook/Storms"
+                width="100%"
+                height="500"
+                frameborder="0">
+            </iframe>
+        </div>
+
+        <p class="project-meta">
+            Use the filters and legends inside the Tableau view to explore the data.
+        </p>
     </section>
 
     <footer>
         <div>
-            <a href="index.html">← Back to main site</a>
+            <a href="#top">↑ Back to top</a> |
+            <a href="index.html">Back to professional pages</a>
         </div>
         <div>
             <a href="https://www.linkedin.com/in/harrison-beck04" target="_blank">LinkedIn</a> ·
