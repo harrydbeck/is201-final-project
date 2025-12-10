@@ -2,335 +2,183 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Scratch Projects – Harrison Beck</title>
+    <title>Scratch Projects - Harrison Beck</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <style>
-        /* Reset-ish */
-        *, *::before, *::after {
+        /* Basic reset */
+        * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: radial-gradient(circle at top, #e0e7ff 0%, #d4e4ff 30%, #f4f3ff 70%, #fdfbff 100%);
-            color: #333;
-            min-height: 100vh;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding: 24px 12px 40px;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #333333;
         }
 
-        .page {
-            width: 100%;
-            max-width: 980px;
-            background: #fffef8;
-            border-radius: 18px;
-            border: 2px solid #c5cae9;
-            box-shadow: 0 18px 40px rgba(31, 41, 55, 0.22);
-            padding: 26px 22px 30px;
-            position: relative;
-        }
-
-        /* “Taped” corners */
-        .page::before,
-        .page::after {
-            content: "";
-            position: absolute;
-            width: 60px;
-            height: 18px;
-            background: rgba(255, 255, 255, 0.75);
-            border-radius: 4px;
-            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.25);
-            transform: rotate(-3deg);
-        }
-
-        .page::before {
-            top: -10px;
-            left: 26px;
-        }
-
-        .page::after {
-            top: -14px;
-            right: 40px;
-            transform: rotate(4deg);
+        .wrapper {
+            max-width: 900px;
+            margin: 20px auto 40px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px 20px 30px 20px;
         }
 
         header {
-            margin-bottom: 22px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-end;
-            gap: 10px 16px;
-            justify-content: space-between;
+            border-bottom: 1px solid #dddddd;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
         }
 
-        .title-block h1 {
-            font-size: clamp(1.9rem, 3vw, 2.3rem);
-            letter-spacing: 0.03em;
-            margin-bottom: 4px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        header h1 {
+            font-size: 2rem;
+            color: #4f46e5;
         }
 
-        .title-block p {
-            font-size: 0.98rem;
-            color: #6b7280;
-        }
-
-        .hand-underline {
-            width: 120px;
-            height: 4px;
-            border-radius: 999px;
-            background: linear-gradient(90deg, #667eea, #a855f7);
-            box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.25);
+        header p {
             margin-top: 4px;
+            font-size: 0.95rem;
+            color: #555555;
         }
 
         nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            margin-top: 10px;
         }
 
         nav a {
+            display: inline-block;
+            margin-right: 10px;
+            padding: 6px 10px;
             text-decoration: none;
             font-size: 0.9rem;
-            padding: 6px 14px;
-            border-radius: 999px;
-            border: 1px dashed rgba(129, 140, 248, 0.8);
-            color: #4f46e5;
-            background: rgba(238, 242, 255, 0.75);
-            box-shadow: 0 2px 0 rgba(129, 140, 248, 0.4);
-            transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s;
+            background-color: #e0e7ff;
+            color: #333333;
+            border-radius: 4px;
+            border: 1px solid #c7d2fe;
         }
 
         nav a:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 3px 0 rgba(79, 70, 229, 0.6);
-            background: rgba(224, 231, 255, 0.95);
-        }
-
-        nav a:active {
-            transform: translateY(0px);
-            box-shadow: 0 1px 0 rgba(79, 70, 229, 0.6);
+            background-color: #c7d2fe;
         }
 
         .intro {
+            background-color: #f3f4ff;
+            border: 1px solid #e0e7ff;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 0.95rem;
             margin-bottom: 18px;
-            padding: 12px 14px;
-            border-radius: 12px;
-            background: rgba(239, 246, 255, 0.9);
-            border: 1px dashed rgba(129, 140, 248, 0.6);
-            font-size: 0.94rem;
-            color: #4b5563;
-            line-height: 1.5;
         }
 
-        .intro strong {
-            color: #4f46e5;
+        .intro p {
+            margin-bottom: 6px;
         }
 
-        .tagline {
-            margin-top: 8px;
-            font-size: 0.9rem;
-            color: #6b7280;
-            font-style: italic;
+        .projects-title {
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+            color: #111827;
         }
 
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 16px;
-            margin-top: 14px;
+            gap: 14px;
         }
 
         .project-card {
-            position: relative;
-            background: #fffbf2;
-            border-radius: 14px;
-            padding: 14px 13px 13px;
-            border: 2px solid #e5e7eb;
-            box-shadow: 0 4px 0 rgba(148, 163, 184, 0.9);
-            overflow: hidden;
-            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 10px 12px 12px 12px;
+            background-color: #fdfdfd;
         }
 
-        .project-card:hover {
-            transform: translateY(-3px) rotate(-0.5deg);
-            box-shadow: 0 7px 0 rgba(107, 114, 128, 0.9);
-            border-color: #c4b5fd;
-        }
-
-        .project-card::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background-image: linear-gradient(135deg, rgba(129, 140, 248, 0.09), transparent 40%, rgba(244, 114, 182, 0.05));
-            opacity: 0.9;
-            pointer-events: none;
-        }
-
-        .project-header {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 6px;
-        }
-
-        .project-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 999px;
-            background: #f97316;
-            box-shadow: 0 0 0 2px #fff3e2;
-        }
-
-        .project-title {
+        .project-card h2 {
             font-size: 1rem;
-            font-weight: 700;
-            color: #374151;
+            margin-bottom: 4px;
+            color: #111827;
         }
 
         .project-tag {
-            margin-left: auto;
             font-size: 0.8rem;
-            padding: 2px 8px;
-            border-radius: 999px;
-            background: rgba(129, 140, 248, 0.14);
             color: #4f46e5;
-            border: 1px solid rgba(129, 140, 248, 0.7);
+            background-color: #e0e7ff;
+            padding: 2px 6px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 6px;
         }
 
-        .project-body {
-            position: relative;
+        .project-card p {
             font-size: 0.9rem;
-            color: #4b5563;
             margin-bottom: 8px;
-            line-height: 1.45;
+            color: #4b5563;
         }
 
         .project-meta {
-            position: relative;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             color: #6b7280;
-        }
-
-        .pill {
-            padding: 3px 8px;
-            border-radius: 999px;
-            background: rgba(219, 234, 254, 0.9);
-            border: 1px solid rgba(147, 197, 253, 0.9);
-        }
-
-        .project-links {
-            position: relative;
-            display: flex;
-            gap: 8px;
-            margin-top: 7px;
+            margin-bottom: 8px;
         }
 
         .project-links a {
-            flex: 1;
-            text-align: center;
-            font-size: 0.84rem;
+            display: inline-block;
+            font-size: 0.85rem;
             text-decoration: none;
-            border-radius: 999px;
-            padding: 6px 8px;
-            border: 1px solid rgba(129, 140, 248, 0.7);
-            background: rgba(238, 242, 255, 0.95);
-            color: #4338ca;
-            box-shadow: 0 2px 0 rgba(129, 140, 248, 0.6);
-            transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s;
+            padding: 5px 8px;
+            margin-right: 6px;
+            border-radius: 4px;
+            border: 1px solid #c7d2fe;
+            background-color: #e0e7ff;
+            color: #1f2933;
         }
 
         .project-links a.secondary {
-            border-style: dashed;
-            background: rgba(249, 250, 251, 0.95);
-            color: #4b5563;
+            background-color: #f3f4f6;
+            border-color: #d1d5db;
         }
 
         .project-links a:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 3px 0 rgba(79, 70, 229, 0.8);
-            background: rgba(224, 231, 255, 1);
-        }
-
-        .project-links a.secondary:hover {
-            background: rgba(243, 244, 246, 1);
+            background-color: #c7d2fe;
         }
 
         footer {
-            margin-top: 26px;
-            padding-top: 14px;
-            border-top: 1px dashed rgba(156, 163, 175, 0.6);
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 10px;
-            align-items: center;
-            font-size: 0.88rem;
+            margin-top: 22px;
+            padding-top: 10px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 0.85rem;
             color: #6b7280;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
-        .footer-links a {
-            margin-right: 12px;
+        footer a {
             color: #4f46e5;
             text-decoration: none;
-            border-bottom: 1px dotted rgba(129, 140, 248, 0.9);
         }
 
-        .footer-links a:hover {
-            color: #7c3aed;
-            border-bottom-style: solid;
+        footer a:hover {
+            text-decoration: underline;
         }
 
-        .social {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .social a {
-            text-decoration: none;
-            font-size: 0.85rem;
-            padding: 4px 10px;
-            border-radius: 999px;
-            background: rgba(99, 102, 241, 0.06);
-            border: 1px solid rgba(129, 140, 248, 0.7);
-            color: #4338ca;
-        }
-
-        .social a:hover {
-            background: rgba(224, 231, 255, 1);
-        }
-
-        @media (max-width: 640px) {
-            .page {
-                padding: 20px 14px 24px;
-            }
-            nav {
-                justify-content: flex-start;
+        @media (max-width: 600px) {
+            .wrapper {
+                margin: 10px;
+                padding: 14px;
             }
         }
     </style>
 </head>
 <body>
-<div class="page">
+<div class="wrapper">
     <header>
-        <div class="title-block">
-            <h1>Scratch & Web Games</h1>
-            <p>Small experiments in momentum, timing, and just having fun.</p>
-            <div class="hand-underline"></div>
-        </div>
+        <h1>Scratch & Web Games</h1>
+        <p>Small projects built in Scratch and the browser.</p>
+
         <nav>
             <a href="index.html">Home</a>
             <a href="scratch.html">Scratch</a>
@@ -339,125 +187,69 @@
     </header>
 
     <section class="intro">
-        <p>
-            A handful of homemade projects built in Scratch and the browser. 
-            They are a bit scrappy on purpose—meant to feel like a notebook of ideas
-            instead of a finished product line.
-        </p>
-        <p class="tagline">
-            <strong>Tip:</strong> Most of these play best with headphones on and the window at full width.
-        </p>
+        <p>A handful of homemade projects that explore momentum, timing, and simple gameplay ideas.</p>
+        <p><strong>Tip:</strong> Most of these play best in a larger window.</p>
     </section>
+
+    <h2 class="projects-title">Projects</h2>
 
     <section class="projects-grid">
         <!-- Project 1 -->
         <article class="project-card">
-            <div class="project-header">
-                <div class="project-dot"></div>
-                <h2 class="project-title">Momentum Runner (Scratch)</h2>
-                <span class="project-tag">Platformer</span>
-            </div>
-            <p class="project-body">
-                A physics‑inspired runner where you surf slopes, manage momentum,
-                and try not to completely wipe out on corners.
-            </p>
-            <div class="project-meta">
-                <span class="pill">Keyboard controls</span>
-                <span>2024 · Scratch</span>
-            </div>
+            <span class="project-tag">Platformer</span>
+            <h2>Momentum Runner (Scratch)</h2>
+            <p>A physics-inspired runner where you build momentum on slopes and try to avoid wiping out.</p>
+            <p class="project-meta">2024 · Scratch · Keyboard controls</p>
             <div class="project-links">
-                <a href="https://scratch.mit.edu/projects/YOUR_PROJECT_ID" target="_blank" rel="noreferrer">
-                    Play on Scratch
-                </a>
-                <a href="momentum-runner.html" class="secondary">
-                    HTML demo
-                </a>
+                <a href="https://scratch.mit.edu/projects/YOUR_PROJECT_ID" target="_blank">Play on Scratch</a>
+                <a href="momentum-runner.html" class="secondary">HTML demo</a>
             </div>
         </article>
 
         <!-- Project 2 -->
         <article class="project-card">
-            <div class="project-header">
-                <div class="project-dot"></div>
-                <h2 class="project-title">Gem Hopper</h2>
-                <span class="project-tag">Arcade</span>
-            </div>
-            <p class="project-body">
-                A simple jump‑and‑collect game focused on timing; grab all the gems
-                before the timer runs out and the platforms disappear.
-            </p>
-            <div class="project-meta">
-                <span class="pill">Short sessions</span>
-                <span>2024 · Scratch</span>
-            </div>
+            <span class="project-tag">Arcade</span>
+            <h2>Gem Hopper</h2>
+            <p>Jump between platforms and collect gems before the timer runs out.</p>
+            <p class="project-meta">2024 · Scratch · Short sessions</p>
             <div class="project-links">
-                <a href="https://scratch.mit.edu/projects/YOUR_PROJECT_ID" target="_blank" rel="noreferrer">
-                    Play on Scratch
-                </a>
-                <a href="#" class="secondary">
-                    Notes
-                </a>
+                <a href="https://scratch.mit.edu/projects/YOUR_PROJECT_ID" target="_blank">Play on Scratch</a>
+                <a href="#" class="secondary">Notes</a>
             </div>
         </article>
 
         <!-- Project 3 -->
         <article class="project-card">
-            <div class="project-header">
-                <div class="project-dot"></div>
-                <h2 class="project-title">Reaction Dash</h2>
-                <span class="project-tag">Mini‑game</span>
-            </div>
-            <p class="project-body">
-                A reaction‑speed challenge: tap or press at just the right moment
-                as prompts slide across the screen faster and faster.
-            </p>
-            <div class="project-meta">
-                <span class="pill">Reflex test</span>
-                <span>2023 · Scratch</span>
-            </div>
+            <span class="project-tag">Mini-game</span>
+            <h2>Reaction Dash</h2>
+            <p>A reaction-speed game where you press keys at just the right time as prompts move across the screen.</p>
+            <p class="project-meta">2023 · Scratch · Reflex test</p>
             <div class="project-links">
-                <a href="https://scratch.mit.edu/projects/YOUR_PROJECT_ID" target="_blank" rel="noreferrer">
-                    Play on Scratch
-                </a>
-                <a href="#" class="secondary">
-                    Sketches
-                </a>
+                <a href="https://scratch.mit.edu/projects/YOUR_PROJECT_ID" target="_blank">Play on Scratch</a>
+                <a href="#" class="secondary">Sketches</a>
             </div>
         </article>
 
         <!-- Project 4 -->
         <article class="project-card">
-            <div class="project-header">
-                <div class="project-dot"></div>
-                <h2 class="project-title">Prototype Shelf</h2>
-                <span class="project-tag">Misc</span>
-            </div>
-            <p class="project-body">
-                A rotating set of in‑progress experiments that may or may not
-                grow into full projects. Expect bugs and odd ideas.
-            </p>
-            <div class="project-meta">
-                <span class="pill">Work in progress</span>
-                <span>Ongoing</span>
-            </div>
+            <span class="project-tag">Misc</span>
+            <h2>Prototype Shelf</h2>
+            <p>A collection of in-progress experiments that may become full projects later.</p>
+            <p class="project-meta">Ongoing · Scratch & Web</p>
             <div class="project-links">
-                <a href="https://scratch.mit.edu/users/YOUR_SCRATCH_USERNAME" target="_blank" rel="noreferrer">
-                    Scratch profile
-                </a>
-                <a href="index.html" class="secondary">
-                    Back to portfolio
-                </a>
+                <a href="https://scratch.mit.edu/users/YOUR_SCRATCH_USERNAME" target="_blank">Scratch profile</a>
+                <a href="index.html" class="secondary">Back to portfolio</a>
             </div>
         </article>
     </section>
 
     <footer>
-        <div class="footer-links">
+        <div>
             <a href="index.html">← Back to main site</a>
         </div>
-        <div class="social">
-            <a href="https://www.linkedin.com/in/harrison-beck04" target="_blank" rel="noreferrer">LinkedIn</a>
-            <a href="https://www.instagram.com/harrydbeck/" target="_blank" rel="noreferrer">Instagram</a>
+        <div>
+            <a href="https://www.linkedin.com/in/harrison-beck04" target="_blank">LinkedIn</a> ·
+            <a href="https://www.instagram.com/harrydbeck/" target="_blank">Instagram</a>
         </div>
     </footer>
 </div>
