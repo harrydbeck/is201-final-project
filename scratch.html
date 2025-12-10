@@ -2,140 +2,126 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>Scratch Projects – Harrison Beck</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>From-Scratch Project Page - Marketing Analytics</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <!-- Navigation Bar -->
-    <div class="navbar">
-        <a href="index.html">Home</a>
-        <a href="#tableau">Analytics</a>
-        <a href="webapp.html">Web App</a>
-    </div>
 
-    <!-- Header -->
-    <div class="header">
-        <h1>Marketing Analytics & Data Visualization</h1>
-        <p>Exploring the intersection of marketing strategy and data-driven insights</p>
-    </div>
+    <style>
+        /* Reset-ish */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    <!-- Main Content -->
-    <div class="content">
-        <h2>My Marketing Journey</h2>
-        <p>As a marketing student at BYU, I've developed a passion for combining creative strategy with analytical rigor. This page showcases my technical skills and interests in data visualization and marketing analytics.</p>
-        
-        <h3>Key Marketing Skills</h3>
-        <!-- Ordered list with embedded unordered list -->
-        <ol>
-            <li>Digital Marketing Strategy
-                <ul>
-                    <li>Content Marketing</li>
-                    <li>Social Media Campaigns</li>
-                    <li>Email Marketing</li>
-                </ul>
-            </li>
-            <li>Data Analytics
-                <ul>
-                    <li>Statistical Analysis</li>
-                    <li>Data Visualization</li>
-                    <li>Predictive Modeling</li>
-                </ul>
-            </li>
-            <li>Technical Skills
-                <ul>
-                    <li>HTML/CSS/JavaScript</li>
-                    <li>Tableau & Excel</li>
-                    <li>SQL Databases</li>
-                </ul>
-            </li>
-        </ol>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #e0e7ff 0%, #d4e4ff 30%, #f4f3ff 70%, #fdfbff 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 24px 12px 40px;
+        }
 
-        <!-- Image -->
-        <div class="image-section">
-            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop" alt="Marketing Analytics Dashboard">
-            <p class="caption">Data-driven marketing drives business growth</p>
-        </div>
+        .page {
+            width: 100%;
+            max-width: 980px;
+            background: #fffef8;
+            border-radius: 18px;
+            border: 2px solid #c5cae9;
+            box-shadow: 0 18px 40px rgba(31, 41, 55, 0.22);
+            padding: 26px 22px 30px;
+            position: relative;
+        }
 
-        <!-- YouTube Video Embed -->
-        <h3>Learn About Marketing Analytics</h3>
-        <div class="video-container">
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/eg4I-RU_vKU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-        </div>
+        /* “Taped” corners */
+        .page::before,
+        .page::after {
+            content: "";
+            position: absolute;
+            width: 60px;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.75);
+            border-radius: 4px;
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.25);
+            transform: rotate(-3deg);
+        }
 
-        <!-- On-page anchor target -->
-        <div id="tableau" class="tableau-section">
-            <h2>Sales & Profit Trend Analysis</h2>
-            <p>This interactive Tableau dashboard demonstrates my ability to work with business intelligence tools and data visualization. Explore the data by clicking on different regions and time periods.</p>
-            
-            <!-- Interactive Tableau Visualization -->
-            <div class='tableauPlaceholder' id='viz1733708400000' style='position: relative'>
-                <noscript>
-                    <a href='#'>
-                        <img alt='Sales and Profit Trend Analyzer-Light' src='https://public.tableau.com/static/images/Sa/SalesandProfitTrendAnalyzer-KPIDashboard/SalesandProfitTrendAnalyzer-Light/1_rss.png' style='border: none' />
-                    </a>
-                </noscript>
-                <object class='tableauViz' style='display:none;'>
-                    <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' />
-                    <param name='embed_code_version' value='3' />
-                    <param name='site_root' value='' />
-                    <param name='name' value='SalesandProfitTrendAnalyzer-KPIDashboard/SalesandProfitTrendAnalyzer-Light' />
-                    <param name='tabs' value='no' />
-                    <param name='toolbar' value='yes' />
-                    <param name='static_image' value='https://public.tableau.com/static/images/Sa/SalesandProfitTrendAnalyzer-KPIDashboard/SalesandProfitTrendAnalyzer-Light/1.png' />
-                    <param name='animate_transition' value='yes' />
-                    <param name='display_static_image' value='yes' />
-                    <param name='display_spinner' value='yes' />
-                    <param name='display_overlay' value='yes' />
-                    <param name='display_count' value='yes' />
-                    <param name='language' value='en-US' />
-                </object>
-            </div>
-            <script type='text/javascript'>
-                var divElement = document.getElementById('viz1733708400000');
-                var vizElement = divElement.getElementsByTagName('object')[0];
-                if (divElement.offsetWidth > 800) {
-                    vizElement.style.width = '1000px';
-                    vizElement.style.height = '827px';
-                } else if (divElement.offsetWidth > 500) {
-                    vizElement.style.width = '1000px';
-                    vizElement.style.height = '827px';
-                } else {
-                    vizElement.style.width = '100%';
-                    vizElement.style.height = '1377px';
-                }
-                var scriptElement = document.createElement('script');
-                scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
-                vizElement.parentNode.insertBefore(scriptElement, vizElement);
-            </script>
-        </div>
+        .page::before {
+            top: -10px;
+            left: 26px;
+        }
 
-        <!-- Interests Section -->
-        <h2>Beyond Marketing</h2>
-        <p>When I'm not analyzing data or creating marketing campaigns, I enjoy:</p>
-        <ul>
-            <li>Rock climbing and outdoor adventures</li>
-            <li>Following Formula 1 racing</li>
-            <li>Learning French language and culture</li>
-            <li>Graphic design and UI/UX projects</li>
-        </ul>
+        .page::after {
+            top: -14px;
+            right: 40px;
+            transform: rotate(4deg);
+        }
 
-        <!-- Call to Action -->
-        <div class="cta-section">
-            <h3>Explore My Interactive Web App</h3>
-            <p>Check out the AI-powered web application I built as part of this project!</p>
-            <a href="webapp.html" class="cta-button">Try the Web App</a>
-        </div>
-    </div>
+        header {
+            margin-bottom: 22px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 10px 16px;
+            justify-content: space-between;
+        }
 
-    <!-- Footer -->
-    <div class="footer">
-        <p>&copy; 2025 Marketing Portfolio | BYU IS 201 Final Project</p>
-                <div class="social-links" style="margin-top: 15px;">
-            <a href="https://www.linkedin.com/in/harrison-beck04" target="_blank" style="margin: 0 10px; color: #0077B5; text-decoration: none; font-weight: bold;">LinkedIn</a>
-            <a href="https://www.instagram.com/harrydbeck/" target="_blank" style="margin: 0 10px; color: #E1306C; text-decoration: none; font-weight: bold;">Instagram</a>
-        </div>
-        <a href="#">Back to Top</a>
-    </div>
-</body>
-</html>
+        .title-block h1 {
+            font-size: clamp(1.9rem, 3vw, 2.3rem);
+            letter-spacing: 0.03em;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .title-block p {
+            font-size: 0.98rem;
+            color: #6b7280;
+        }
+
+        .hand-underline {
+            width: 120px;
+            height: 4px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #667eea, #a855f7);
+            box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.25);
+            margin-top: 4px;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        nav a {
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 1px dashed rgba(129, 140, 248, 0.8);
+            color: #4f46e5;
+            background: rgba(238, 242, 255, 0.75);
+            box-shadow: 0 2px 0 rgba(129, 140, 248, 0.4);
+            transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s;
+        }
+
+        nav a:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 0 rgba(79, 70, 229, 0.6);
+            background: rgba(224, 231, 255, 0.95);
+        }
+
+        nav a:active {
+            transform: translateY(0px);
+            box-shadow: 0 1px 0 rgba(79, 70, 229, 0.6);
+        }
+
+        .intro {
+            margin-bottom: 18px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: rgba(239, 246, 255, 0.9);
