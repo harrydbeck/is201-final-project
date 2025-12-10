@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Momentum Runner - Interactive Game</title>
+    <title>Momentum Runner - Platformer</title>
     <style>
         * {
             margin: 0;
@@ -15,15 +15,21 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
         .game-container {
+            position: relative;
             text-align: center;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             padding: 30px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             max-width: 900px;
+            width: 100%;
             backdrop-filter: blur(10px);
         }
 
@@ -45,7 +51,7 @@
         #gameCanvas {
             border: 4px solid #667eea;
             border-radius: 15px;
-            background: linear-gradient(180deg, #e0e7ff 0%, #f0f4ff 100%);
+            background: linear-gradient(180deg, #90caf9 0%, #e3f2fd 40%, #c8e6c9 40%, #a5d6a7 100%);
             cursor: crosshair;
             max-width: 100%;
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
@@ -102,7 +108,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
-            padding: 50px;
+            padding: 40px 50px;
             border-radius: 25px;
             box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
             display: none;
@@ -214,7 +220,7 @@
 <body>
     <div class="game-container">
         <h1>⚡ Momentum Runner</h1>
-        <p class="subtitle">Master the slopes and collect gems!</p>
+        <p class="subtitle">Mario‑style platformer: run, jump, collect!</p>
 
         <div class="stats">
             <div class="stat-box">
@@ -227,13 +233,13 @@
             </div>
         </div>
 
-                <button id="startBtn" class="restart-btn" style="margin: 20px 0;">Start Game</button>
+        <button id="startBtn" class="restart-btn" style="margin: 20px 0;">Start Game</button>
 
         <canvas id="gameCanvas" width="800" height="450"></canvas>
 
         <div class="controls">
             <strong>Controls:</strong> A/D or ← → to move | <strong>SPACE</strong> to jump<br>
-        <c    💨 Build momentum on slopes | 💎 Collect gems | ⚠️ Avoid obstacles!
+            💨 Build momentum, 💰 collect coins, ❌ avoid enemies & pits!
         </div>
 
         <div class="links">
@@ -245,6 +251,8 @@
             <a href="https://www.linkedin.com/in/harrison-beck04" target="_blank">LinkedIn</a>
             <a href="https://www.instagram.com/harrydbeck/" target="_blank">Instagram</a>
         </div>
+
+        <div class="speed-indicator" id="speedIndicator">Speed: 0</div>
     </div>
 
     <div class="game-over" id="gameOver">
@@ -259,279 +267,610 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Game state
+        // UI state
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const highScoreDisplay = document.getElementById('highScoreDisplay');
+        const speedIndicator = document.getElementById('speedIndicator');
+        const gameOverPanel = document.getElementById('gameOver');
+        const finalScoreEl = document.getElementById('finalScore');
+        const startBtn = document.getElementById('startBtn');
+
         let score = 0;
-        let highScore = localStorage.getItem('momentumRunnerHS') || 0;
+        let highScore = Number(localStorage.getItem('momentumRunnerHS') || 0);
+        highScoreDisplay.textContent = highScore;
+
         let gameRunning = false;
-        let baseSpeed = 4;
-        let scrollSpeed = baseSpeed;
-
-        // Player with momentum physics
-        const player = {
-            x: 150,
-            y: 300,
-            width: 30,
-            height: 30,
-            velocityX: 0,
-            velocityY: 0,
-            speed: 0,
-            maxSpeed: 12,
-            acceleration: 0.5,
-            friction: 0.92,
-            jumping: false,
-            onGround: false
-        };
-
-        // Game objects
-        let platforms = [];
-        let gems = [];
-        let obstacles = [];
-        let particles = [];
+        let gameOverFlag = false;
 
         // Physics constants
-        const GRAVITY = 0.6;
-        const JUMP_POWER = -13;
-        const GROUND_Y = 350;
+        const GRAVITY = 0.7;
+        const MOVE_ACCEL = 0.6;
+        const MAX_RUN_SPEED = 6;
+        const FRICTION_GROUND = 0.80;
+        const FRICTION_AIR = 0.95;
+        const JUMP_VELOCITY = -13;
+        const TERMINAL_VELOCITY = 20;
 
-        // Initialize
-        document.getElementById('highScoreDisplay').textContent = highScore;
-        createInitialPlatforms();
+        // Camera
+        const camera = {
+            x: 0,
+            y: 0
+        };
 
-            // Start button handler
-    document.getElementById('startBtn').addEventListener('click', () => {
-        gameRunning = true;
-        document.getElementById('startBtn').style.display = 'none';
-    });
+        // World
+        const world = {
+            width: 4000,
+            height: canvas.height
+        };
 
-        // Input handling
+        // Player
+        const player = {
+            x: 150,
+            y: 0,
+            width: 32,
+            height: 40,
+            vx: 0,
+            vy: 0,
+            onGround: false,
+            facing: 1, // 1 right, -1 left
+            color: '#764ba2'
+        };
+
+        // Entities
+        let platforms = [];
+        let coins = [];
+        let enemies = [];
+        let particles = [];
+
+        // Controls
         const keys = {};
-        document.addEventListener('keydown', (e) => {
-            keys[e.key] = true;
-            if (e.key === ' ' && player.onGround && gameRunning) {
+        document.addEventListener('keydown', e => {
+            keys[e.key.toLowerCase()] = true;
+            if (e.code === 'ArrowLeft') keys['arrowleft'] = true;
+            if (e.code === 'ArrowRight') keys['arrowright'] = true;
+            if (e.code === 'Space') keys[' '] = true;
+
+            if ((e.code === 'Space' || e.code === 'ArrowUp') && player.onGround && gameRunning && !gameOverFlag) {
                 e.preventDefault();
-                jump();
+                playerJump();
             }
         });
 
-        document.addEventListener('keyup', (e) => {
-            keys[e.key] = false;
+        document.addEventListener('keyup', e => {
+            keys[e.key.toLowerCase()] = false;
+            if (e.code === 'ArrowLeft') keys['arrowleft'] = false;
+            if (e.code === 'ArrowRight') keys['arrowright'] = false;
+            if (e.code === 'Space') keys[' '] = false;
         });
 
-        function jump() {
-            player.velocityY = JUMP_POWER;
-            player.jumping = true;
-            player.onGround = false;
-            createParticles(player.x + player.width/2, player.y + player.height, '#667eea', 8);
+        startBtn.addEventListener('click', () => {
+            if (!gameRunning) {
+                startGame();
+            }
+        });
+
+        function startGame() {
+            resetWorld();
+            gameRunning = true;
+            gameOverFlag = false;
+            startBtn.style.display = 'none';
+            gameOverPanel.classList.remove('show');
         }
 
-        function createInitialPlatforms() {
-            // Create ground
+        function resetWorld() {
+            score = 0;
+            scoreDisplay.textContent = score;
+            camera.x = 0;
+
+            player.x = 150;
+            player.y = 200;
+            player.vx = 0;
+            player.vy = 0;
+            player.onGround = false;
+            player.facing = 1;
+
+            platforms = [];
+            coins = [];
+            enemies = [];
+            particles = [];
+
+            buildLevel();
+        }
+
+        // Simple rectangle collision test (AABB)
+        function rectsOverlap(a, b) {
+            return (
+                a.x < b.x + b.width &&
+                a.x + a.width > b.x &&
+                a.y < b.y + b.height &&
+                a.y + a.height > b.y
+            );
+        }
+
+        function buildLevel() {
+            const groundHeight = 60;
+            // Main ground
             platforms.push({
                 x: 0,
-                y: GROUND_Y,
-                width: canvas.width * 3,
-                height: 100,
-                slope: 0
+                y: world.height - groundHeight,
+                width: world.width,
+                height: groundHeight,
+                color: '#4caf50'
             });
 
-            // Create varied platforms
-            for (let i = 1; i < 10; i++) {
-                const slopeType = Math.random();
-                let slope = 0;
-                if (slopeType < 0.3) slope = -0.3; // Upward
-                else if (slopeType < 0.6) slope = 0.3; // Downward
-                
+            // Floating platforms (Mario‑like progression)[web:21][web:28]
+            const platformData = [
+                { x: 300, y: 320 },
+                { x: 500, y: 260 },
+                { x: 750, y: 260 },
+                { x: 1050, y: 300 },
+                { x: 1300, y: 250 },
+                { x: 1600, y: 230 },
+                { x: 1900, y: 280 },
+                { x: 2200, y: 240 },
+                { x: 2500, y: 210 },
+                { x: 2800, y: 260 },
+                { x: 3100, y: 240 },
+                { x: 3400, y: 220 }
+            ];
+
+            platformData.forEach(p => {
                 platforms.push({
-                    x: i * 200,
-                    y: 250 + Math.random() * 100,
-                    width: 150 + Math.random() * 100,
+                    x: p.x,
+                    y: p.y,
+                    width: 140,
                     height: 20,
-                    slope: slope
+                    color: '#66bb6a'
                 });
-            }
-        }
-
-        function spawnPlatform() {
-            const lastPlatform = platforms[platforms.length - 1];
-            const slopeType = Math.random();
-            let slope = 0;
-            if (slopeType < 0.35) slope = -0.4;
-            else if (slopeType < 0.7) slope = 0.4;
-
-            platforms.push({
-                x: lastPlatform.x + lastPlatform.width + 100 + Math.random() * 150,
-                y: 200 + Math.random() * 150,
-                width: 120 + Math.random() * 180,
-                height: 20,
-                slope: slope
             });
 
-            // Spawn gem on platform
-            if (Math.random() < 0.6) {
-                const lastPlat = platforms[platforms.length - 1];
-                gems.push({
-                    x: lastPlat.x + lastPlat.width/2,
-                    y: lastPlat.y - 40,
-                    size: 15,
-                    collected: false,
-                    pulse: 0
+            // Coins on or near platforms
+            platformData.forEach(p => {
+                coins.push({
+                    x: p.x + 55,
+                    y: p.y - 30,
+                    width: 18,
+                    height: 18,
+                    collected: false
+                });
+            });
+
+            // Ground coins
+            for (let i = 350; i < world.width; i += 350) {
+                coins.push({
+                    x: i,
+                    y: world.height - groundHeight - 40,
+                    width: 18,
+                    height: 18,
+                    collected: false
                 });
             }
 
-            // Spawn obstacle
-            if (Math.random() < 0.3) {
-                const lastPlat = platforms[platforms.length - 1];
-                obstacles.push({
-                    x: lastPlat.x + lastPlat.width/2,
-                    y: lastPlat.y - 35,
-                    width: 25,
-                    height: 35
+            // Enemies patrolling some platforms[web:21][web:28]
+            const enemyPlatforms = [platforms[2], platforms[4], platforms[6], platforms[8]];
+            enemyPlatforms.forEach(plat => {
+                enemies.push({
+                    x: plat.x + 20,
+                    y: plat.y - 24,
+                    width: 28,
+                    height: 24,
+                    vx: 1.2,
+                    patrolLeft: plat.x + 10,
+                    patrolRight: plat.x + plat.width - 38,
+                    alive: true
                 });
-            }
+            });
         }
 
-        function createParticles(x, y, color, count) {
+        function playerJump() {
+            player.vy = JUMP_VELOCITY;
+            player.onGround = false;
+            spawnJumpParticles();
+        }
+
+        function spawnJumpParticles() {
+            const count = 10;
             for (let i = 0; i < count; i++) {
                 particles.push({
-                    x: x,
-                    y: y,
-                    vx: (Math.random() - 0.5) * 6,
-                    vy: (Math.random() - 0.5) * 6,
-                    life: 30,
-                    maxLife: 30,
-                    size: Math.random() * 4 + 2,
-                    color: color
+                    x: player.x + player.width / 2,
+                    y: player.y + player.height,
+                    vx: (Math.random() - 0.5) * 3,
+                    vy: -Math.random() * 3,
+                    life: 20 + Math.random() * 10,
+                    radius: 2 + Math.random() * 2,
+                    color: '#667eea'
                 });
             }
         }
 
-        function update() {
-            if (!gameRunning) return;
-
-            // Horizontal movement with momentum
-            if (keys['a'] || keys['A'] || keys['ArrowLeft']) {
-                player.velocityX -= player.acceleration;
+        function spawnCoinParticles(cx, cy) {
+            for (let i = 0; i < 12; i++) {
+                particles.push({
+                    x: cx,
+                    y: cy,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: (Math.random() - 0.5) * 4,
+                    life: 25 + Math.random() * 10,
+                    radius: 2 + Math.random() * 2,
+                    color: '#ffd700'
+                });
             }
-            if (keys['d'] || keys['D'] || keys['ArrowRight']) {
-                player.velocityX += player.acceleration;
-            }
-
-            // Apply friction and speed limits
-            player.velocityX *= player.friction;
-            player.velocityX = Math.max(-player.maxSpeed, Math.min(player.maxSpeed, player.velocityX));
-
-            // Apply gravity
-            player.velocityY += GRAVITY;
-            player.velocityY = Math.min(player.velocityY, 20);
-
-            // Update position
-            player.x += player.velocityX;
-            player.y += player.velocityY;
-
-            // Keep player in bounds
-            player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
-
-                    // Platform collision detection
-        player.onGround = false;
-        platforms.forEach(plat => {
-            // Check if player is above platform and falling down
-            if (player.y + player.height >= plat.y &&
-                player.y + player.height <= plat.y + plat.height &&
-                player.x + player.width > plat.x - scrollSpeed &&
-                player.x < plat.x - scrollSpeed + plat.width &&
-                player.velocityY >= 0) {
-                
-                player.y = plat.y - player.height;
-                player.velocityY = 0;
-                player.onGround = true;
-                player.jumping = false;
-            }
-        });
-        
-        // Ensure player stays on ground level minimum
-        if (player.y + player.height > GROUND_Y) {
-            player.y = GROUND_Y - player.height;
-            player.velocityY = 0;
-            player.onGround = true;
-            player.jumping = false;
         }
 
-            // Reset
-                    if (player.y > canvas.height) {
-            gameOver();
+        function spawnEnemyHitParticles(ex, ey) {
+            for (let i = 0; i < 14; i++) {
+                particles.push({
+                    x: ex + 10,
+                    y: ey + 10,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: -Math.random() * 4,
+                    life: 25 + Math.random() * 10,
+                    radius: 2 + Math.random() * 2,
+                    color: '#ff5252'
+                });
+            }
         }
-    }
 
-    function gameOver() {
-        gameRunning = false;
-        if (score > highScore) {
-            highScore = score;
-            localStorage.setItem('momentumRunnerHS', highScore);
-            document.getElementById('highScoreDisplay').textContent = highScore;
+        function updatePlayer(dt) {
+            let moveLeft = keys['a'] || keys['arrowleft'];
+            let moveRight = keys['d'] || keys['arrowright'];
+
+            if (moveLeft) {
+                player.vx -= MOVE_ACCEL;
+                player.facing = -1;
+            }
+            if (moveRight) {
+                player.vx += MOVE_ACCEL;
+                player.facing = 1;
+            }
+
+            if (!moveLeft && !moveRight && player.onGround) {
+                player.vx *= FRICTION_GROUND;
+            } else if (!player.onGround) {
+                player.vx *= FRICTION_AIR;
+            }
+
+            if (player.vx > MAX_RUN_SPEED) player.vx = MAX_RUN_SPEED;
+            if (player.vx < -MAX_RUN_SPEED) player.vx = -MAX_RUN_SPEED;
+
+            player.vy += GRAVITY;
+            if (player.vy > TERMINAL_VELOCITY) player.vy = TERMINAL_VELOCITY;
+
+            // Horizontal move and collisions[web:21][web:39]
+            player.x += player.vx;
+            resolveCollisionsAxis('x');
+
+            // Vertical move and collisions
+            player.y += player.vy;
+            player.onGround = false;
+            resolveCollisionsAxis('y');
+
+            // Check pits (fall off bottom)
+            if (player.y > world.height + 200) {
+                triggerGameOver();
+            }
+
+            // Clamp within world
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > world.width) {
+                player.x = world.width - player.width;
+            }
+
+            const speedMag = Math.abs(player.vx).toFixed(1);
+            speedIndicator.textContent = `Speed: ${speedMag}`;
         }
-    }
 
-    function draw() {
-        // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function resolveCollisionsAxis(axis) {
+            const playerBox = {
+                x: player.x,
+                y: player.y,
+                width: player.width,
+                height: player.height
+            };
 
-        // Draw platforms
-        ctx.fillStyle = '#667eea';
-        platforms.forEach(plat => {
-            ctx.beginPath();
-            if (plat.slope === 0) {
-                ctx.fillRect(plat.x - scrollSpeed, plat.y, plat.width, plat.height);
-            } else {
-                // Draw sloped platform
-                const slopeHeight = plat.width * plat.slope;
-                ctx.moveTo(plat.x - scrollSpeed, plat.y);
-                ctx.lineTo(plat.x - scrollSpeed + plat.width, plat.y + slopeHeight);
-                ctx.lineTo(plat.x - scrollSpeed + plat.width, plat.y + slopeHeight + plat.height);
-                ctx.lineTo(plat.x - scrollSpeed, plat.y + plat.height);
+            for (let plat of platforms) {
+                const platBox = {
+                    x: plat.x,
+                    y: plat.y,
+                    width: plat.width,
+                    height: plat.height
+                };
+
+                if (!rectsOverlap(playerBox, platBox)) continue;
+
+                if (axis === 'x') {
+                    if (player.vx > 0) {
+                        player.x = plat.x - player.width;
+                    } else if (player.vx < 0) {
+                        player.x = plat.x + plat.width;
+                    }
+                    player.vx = 0;
+                    playerBox.x = player.x;
+                } else if (axis === 'y') {
+                    if (player.vy > 0) {
+                        player.y = plat.y - player.height;
+                        player.vy = 0;
+                        player.onGround = true;
+                    } else if (player.vy < 0) {
+                        player.y = plat.y + plat.height;
+                        player.vy = 0;
+                    }
+                    playerBox.y = player.y;
+                }
+            }
+        }
+
+        function updateEnemies(dt) {
+            enemies.forEach(enemy => {
+                if (!enemy.alive) return;
+                enemy.x += enemy.vx;
+
+                if (enemy.x < enemy.patrolLeft) {
+                    enemy.x = enemy.patrolLeft;
+                    enemy.vx = Math.abs(enemy.vx);
+                } else if (enemy.x + enemy.width > enemy.patrolRight) {
+                    enemy.x = enemy.patrolRight - enemy.width;
+                    enemy.vx = -Math.abs(enemy.vx);
+                }
+
+                const enemyBox = {
+                    x: enemy.x,
+                    y: enemy.y,
+                    width: enemy.width,
+                    height: enemy.height
+                };
+                const playerBox = {
+                    x: player.x,
+                    y: player.y,
+                    width: player.width,
+                    height: player.height
+                };
+
+                if (!rectsOverlap(playerBox, enemyBox)) return;
+
+                const playerBottom = player.y + player.height;
+                const enemyTop = enemy.y;
+
+                if (playerBottom <= enemyTop + 10 && player.vy > 0) {
+                    enemy.alive = false;
+                    player.vy = JUMP_VELOCITY * 0.6;
+                    score += 50;
+                    scoreDisplay.textContent = score;
+                    spawnEnemyHitParticles(enemy.x, enemy.y);
+                } else {
+                    triggerGameOver();
+                }
+            });
+        }
+
+        function updateCoins(dt) {
+            coins.forEach(coin => {
+                if (coin.collected) return;
+
+                const coinBox = {
+                    x: coin.x,
+                    y: coin.y,
+                    width: coin.width,
+                    height: coin.height
+                };
+                const playerBox = {
+                    x: player.x,
+                    y: player.y,
+                    width: player.width,
+                    height: player.height
+                };
+
+                if (rectsOverlap(playerBox, coinBox)) {
+                    coin.collected = true;
+                    score += 10;
+                    scoreDisplay.textContent = score;
+                    spawnCoinParticles(coin.x + coin.width / 2, coin.y + coin.height / 2);
+                }
+            });
+        }
+
+        function updateParticles(dt) {
+            particles = particles.filter(p => p.life > 0);
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.15;
+                p.life -= 1;
+            });
+        }
+
+        function updateCamera() {
+            const target = player.x + player.width / 2;
+            const center = canvas.width / 2;
+            let desiredX = target - center;
+
+            if (desiredX < 0) desiredX = 0;
+            if (desiredX > world.width - canvas.width) {
+                desiredX = world.width - canvas.width;
+            }
+
+            camera.x += (desiredX - camera.x) * 0.2;
+            camera.y = 0;
+        }
+
+        function triggerGameOver() {
+            if (gameOverFlag) return;
+            gameOverFlag = true;
+            gameRunning = false;
+
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('momentumRunnerHS', highScore);
+                highScoreDisplay.textContent = highScore;
+            }
+
+            finalScoreEl.textContent = score;
+            gameOverPanel.classList.add('show');
+            startBtn.style.display = 'inline-block';
+            startBtn.textContent = 'Restart';
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        window.restartGame = restartGame;
+
+        function drawBackground() {
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGrad.addColorStop(0, '#90caf9');
+            skyGrad.addColorStop(0.4, '#e3f2fd');
+            skyGrad.addColorStop(0.4, '#c8e6c9');
+            skyGrad.addColorStop(1, '#a5d6a7');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'rgba(255,255,255,0.8)';
+            const clouds = [
+                { x: 80, y: 60 },
+                { x: 260, y: 90 },
+                { x: 520, y: 50 },
+                { x: 700, y: 110 }
+            ];
+            clouds.forEach(cloud => {
+                const cx = cloud.x - (camera.x * 0.5) % (canvas.width + 200);
+                ctx.beginPath();
+                ctx.arc(cx, cloud.y, 25, 0, Math.PI * 2);
+                ctx.arc(cx + 25, cloud.y + 8, 20, 0, Math.PI * 2);
+                ctx.arc(cx - 25, cloud.y + 10, 20, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function drawPlatforms() {
+            platforms.forEach(plat => {
+                const screenX = Math.floor(plat.x - camera.x);
+                const screenY = Math.floor(plat.y - camera.y);
+                if (screenX + plat.width < 0 || screenX > canvas.width) return;
+
+                ctx.fillStyle = plat.color;
+                ctx.fillRect(screenX, screenY, plat.width, plat.height);
+
+                ctx.fillStyle = 'rgba(255,255,255,0.25)';
+                ctx.fillRect(screenX, screenY, plat.width, 6);
+            });
+        }
+
+        function drawCoins() {
+            coins.forEach(coin => {
+                if (coin.collected) return;
+                const screenX = coin.x - camera.x + coin.width / 2;
+                const screenY = coin.y - camera.y + coin.height / 2;
+
+                if (screenX < -40 || screenX > canvas.width + 40) return;
+
+                ctx.save();
+                ctx.translate(screenX, screenY);
+                ctx.fillStyle = '#ffd700';
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 10, 14, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#fff59d';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 4, 10, 0, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+            });
+        }
+
+        function drawEnemies() {
+            enemies.forEach(enemy => {
+                if (!enemy.alive) return;
+                const screenX = enemy.x - camera.x;
+                const screenY = enemy.y - camera.y;
+                if (screenX + enemy.width < 0 || screenX > canvas.width) return;
+
+                ctx.fillStyle = '#ff5252';
+                ctx.fillRect(screenX, screenY, enemy.width, enemy.height);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(screenX + 4, screenY + 6, 8, 8);
+                ctx.fillRect(screenX + enemy.width - 12, screenY + 6, 8, 8);
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(screenX + 7, screenY + 9, 4, 4);
+                ctx.fillRect(screenX + enemy.width - 9, screenY + 9, 4, 4);
+
+                ctx.fillStyle = '#c62828';
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY + enemy.height);
+                ctx.lineTo(screenX + enemy.width / 2, screenY + enemy.height - 8);
+                ctx.lineTo(screenX + enemy.width, screenY + enemy.height);
                 ctx.closePath();
                 ctx.fill();
-            }
-        });
-
-        // Draw player
-        ctx.fillStyle = '#764ba2';
-        ctx.fillRect(player.x, player.y, player.width, player.height);
-
-        // Draw gems
-        ctx.fillStyle = '#FFD700';
-        gems.forEach(gem => {
-            if (!gem.collected) {
-                ctx.beginPath();
-                ctx.arc(gem.x - scrollSpeed, gem.y, gem.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        });
-
-        // Draw obstacles
-        ctx.fillStyle = '#FF4444';
-        obstacles.forEach(obs => {
-            ctx.fillRect(obs.x - scrollSpeed, obs.y, obs.width, obs.height);
-        });
-
-        // Draw particles
-        ctx.fillStyle = '#667eea';
-        particles.forEach(p => {
-            ctx.globalAlpha = p.life / p.maxLife;
-            ctx.fillRect(p.x, p.y, p.size, p.size);
-        });
-        ctx.globalAlpha = 1;
-    }
-
-    function gameLoop() {
-        if (gameRunning) {
-            update();
-            draw();
+            });
         }
-        requestAnimationFrame(gameLoop);
-    }
 
-    // Start game
-    gameLoop();
+        function drawPlayer() {
+            const screenX = player.x - camera.x;
+            const screenY = player.y - camera.y;
+
+            ctx.save();
+            ctx.translate(screenX + player.width / 2, screenY + player.height / 2);
+            ctx.scale(player.facing, 1);
+            ctx.translate(-player.width / 2, -player.height / 2);
+
+            ctx.fillStyle = player.color;
+            ctx.fillRect(0, 0, player.width, player.height);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(5, 8, 10, 10);
+            ctx.fillRect(player.width - 15, 8, 10, 10);
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(9, 12, 4, 4);
+            ctx.fillRect(player.width - 11, 12, 4, 4);
+
+            ctx.fillStyle = '#5e35b1';
+            ctx.fillRect(4, 0, player.width - 8, 8);
+
+            ctx.restore();
+        }
+
+        function drawParticles() {
+            particles.forEach(p => {
+                const screenX = p.x - camera.x;
+                const screenY = p.y - camera.y;
+                if (screenX < -20 || screenX > canvas.width + 20) return;
+
+                ctx.globalAlpha = Math.max(0, p.life / 30);
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(screenX, screenY, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            });
+        }
+
+        let lastTime = 0;
+        function gameLoop(timestamp) {
+            const dt = (timestamp - lastTime) / 16.67;
+            lastTime = timestamp;
+
+            if (gameRunning) {
+                updatePlayer(dt);
+                updateEnemies(dt);
+                updateCoins(dt);
+                updateParticles(dt);
+                updateCamera();
+            }
+
+            drawBackground();
+            drawPlatforms();
+            drawCoins();
+            drawEnemies();
+            drawPlayer();
+            drawParticles();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        resetWorld();
+        requestAnimationFrame(gameLoop);
     </script>
 </body>
 </html>
